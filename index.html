@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>2FA QR Generator</title>
+   <script src="https://cdn.jsdelivr.net/npm/kjua@0.9.0/dist/kjua.min.js"></script>
+   <style>
+       body{font-family:monospace;max-width:500px;margin:20px auto;background:#1a1a1a;color:#fff;padding:20px}
+       input,select{width:100%;padding:8px;margin:5px 0;background:#222;color:#fff;border:1px solid #444;box-sizing:border-box}
+       button{background:#007acc;color:#fff;padding:12px 24px;border:none;margin:8px 4px;cursor:pointer;border-radius:6px;font-size:14px;font-weight:500;transition:all 0.2s ease;display:inline-block}
+       .button-container{text-align:center}
+       button:hover{background:#005a99;transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,122,204,0.3)}
+       button:active{transform:translateY(0);box-shadow:0 2px 4px rgba(0,122,204,0.2)}
+       .result{margin:20px 0;text-align:center;display:none}
+       .error{color:#ff4444;margin:10px 0;display:none}
+       .secret{font-family:monospace;background:#222;padding:10px;margin:10px 0;word-break:break-all}
+       h2{text-align:center}
+       .credit{font-size:12px;color:#666;margin-top:20px;}
+   </style>
+</head>
+<body>
+   <h2>2FA QR Generator</h2>
+   <input id="account" placeholder="Username" required>
+   <input id="secret" placeholder="Secret Key" required>
+   <div class="button-container">
+       <button onclick="generate()">Generate</button>
+       <button onclick="randomSecret()">Random Secret</button>
+   </div>
+   <div id="error" class="error"></div>
+   <div id="result" class="result">
+       <div id="qr"></div>
+       <div id="backup"></div>
+       <div id="fullSecret" class="secret"></div>
+       <div class="button-container">
+           <button onclick="copy(window.currentSecret)">Copy Secret</button>
+           <button onclick="copy(window.currentUrl)">Copy URL</button>
+       </div>
+   </div>
+   <div class="credit">Powered by <a href="https://github.com/lrsjng/kjua" target="_blank" style="color:#666;">kjua QR library</a></div>
+   <script>
+       const randomSecret = () => document.getElementById('secret').value = Array.from({length:32}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'[Math.floor(Math.random()*32)]).join('')
+       const copy = text => navigator.clipboard.writeText(text)
+       const showError = msg => {document.getElementById('error').textContent = msg; document.getElementById('error').style.display = 'block'; document.getElementById('result').style.display = 'none'}
+       function generate() {
+           const account = document.getElementById('account').value.trim()
+           const secret = document.getElementById('secret').value.trim().replace(/\s/g, '').toUpperCase()
+           if (!account || !secret) return showError('Missing account or secret')
+           if (!/^[A-Z2-7]+=*$/.test(secret) || secret.length < 16) return showError('Invalid secret format')
+           const url = `otpauth://totp/Graal%20Online:${encodeURIComponent(account)}?secret=${secret}&issuer=Graal%20Online&algorithm=SHA1&digits=6&period=30`
+           const qr = kjua({text: url, size: 200, crisp: false, rounded: 100, quiet: 1, render: 'image'})
+           document.getElementById('qr').innerHTML = ''
+           document.getElementById('qr').appendChild(qr)
+           document.getElementById('backup').textContent = `Backup: ${secret.substring(0, 5)}`
+           document.getElementById('fullSecret').textContent = `Secret: ${secret}`
+           document.getElementById('error').style.display = 'none'
+           document.getElementById('result').style.display = 'block'
+           window.currentSecret = secret
+           window.currentUrl = url
+       }
+   </script>
+</body>
+</html>
