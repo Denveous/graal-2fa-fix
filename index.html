@@ -24,7 +24,6 @@
    <input id="secret" placeholder="Secret Key" required>
    <div class="button-container">
        <button onclick="generate()">Generate</button>
-       <button onclick="randomSecret()">Random Secret</button>
    </div>
    <div id="error" class="error"></div>
    <div id="result" class="result">
@@ -38,7 +37,6 @@
    </div>
    <div class="credit">Powered by <a href="https://github.com/lrsjng/kjua" target="_blank" style="color:#666;">kjua QR library</a></div>
    <script>
-       const randomSecret = () => document.getElementById('secret').value = Array.from({length:32}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'[Math.floor(Math.random()*32)]).join('')
        const copy = text => navigator.clipboard.writeText(text)
        const showError = msg => {document.getElementById('error').textContent = msg; document.getElementById('error').style.display = 'block'; document.getElementById('result').style.display = 'none'}
        function generate() {
