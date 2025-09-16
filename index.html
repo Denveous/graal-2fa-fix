@@ -28,10 +28,8 @@
    <div id="error" class="error"></div>
    <div id="result" class="result">
        <div id="qr"></div>
-       <div id="backup"></div>
        <div id="fullSecret" class="secret"></div>
        <div class="button-container">
-           <button onclick="copy(window.currentSecret)">Copy Secret</button>
            <button onclick="copy(window.currentUrl)">Copy URL</button>
        </div>
    </div>
@@ -48,7 +46,6 @@
            const qr = kjua({text: url, size: 200, crisp: false, rounded: 100, quiet: 1, render: 'image'})
            document.getElementById('qr').innerHTML = ''
            document.getElementById('qr').appendChild(qr)
-           document.getElementById('backup').textContent = `Backup: ${secret.substring(0, 5)}`
            document.getElementById('fullSecret').textContent = `Secret: ${secret}`
            document.getElementById('error').style.display = 'none'
            document.getElementById('result').style.display = 'block'
